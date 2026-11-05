@@ -1,0 +1,10 @@
+{
+  "name": "devops",
+  "version": "1.0.0",
+  "description": "DevOps practical lab",
+  "main": "src/hello.js",
+  "scripts": {
+    "start": "node src/hello.js",
+    "test": "node --test"
+  }
+}
