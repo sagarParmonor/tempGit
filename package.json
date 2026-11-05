@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "DevOps practical lab",
   "main": "src/hello.js",
+  "files":[
+    "src/"
+  ],
   "scripts": {
     "start": "node src/hello.js",
+    "check": "node --check src/hello.js && node --check src/greet.js",
     "test": "node --test"
   }
 }

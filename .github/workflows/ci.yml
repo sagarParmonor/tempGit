@@ -2,20 +2,34 @@ name: devops
 
 on:
     push:
-        branches: [main]
+        branches: 
+            - main
+            - "feature/**"
 
     pull_request:
-        branches: [main]
+        branches: 
+            - main
 
     workflow_dispatch:
 
 permissions:
     contents: read
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     test:
-        name: test javascript application
+        name: test (node ${{ matrix.node-version }})
+
         runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        strategy:
+            fail-fast: false
+            matrix:
+                node-version: [22, 24]
 
         steps:
             - name: checkout repository
@@ -24,13 +38,59 @@ jobs:
             - name: setup nodejs
               uses: actions/setup-node@v4
               with:
-                node-version: 22
+                node-version: ${{ matrix.node-version }}
+                cache: npm
+                cache-dependency-path: package-lock.json
 
             - name: install dependencies
               run: npm install
+
+            - name: validate javascript syntax
+              run: npm run check
 
             - name: run automated tests
               run: npm test
 
             - name: run application
               run: npm start
+
+            - name: show failure information
+              if: failure()
+              run: echo "CI failed. inspect the failed step above."
+
+            - name: show final job status
+              if: always()
+              run: echo "job status = ${{ job.status }}"
+
+
+    package:
+        name: package application
+        needs: test
+
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+
+        steps:
+            - name: checkout repository
+              uses: actions/checkout@v4
+
+            - name: setup nodejs
+              uses: actions/setup-node@v4
+              with:
+                node-version: 24
+                cache: npm
+                cache-dependency-path: package-lock.json
+
+            - name: install dependencies
+              run: npm ci
+
+            - name: create package
+              run: npm pack --pack-destination dist
+
+            - name: upload application artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: devops-${{ github.sha }}
+                path: dist/*.tgz
+                if-no-files-found: error
+                retention-days: 14
