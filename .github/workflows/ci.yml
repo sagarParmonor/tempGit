@@ -1,0 +1,36 @@
+name: devops
+
+on:
+    push:
+
+    pull_request:
+        branches:
+            - main
+
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        name: test javascript application
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: checkout repository
+              uses: actions/checkout@v7.0.1
+
+            - name: setup nodejs
+              uses: actions/setup-node@7.1.0
+              with:
+                node-version: 24
+
+            - name: install dependencies
+              run: npm install
+
+            - name: run automated tests
+              run: npm test
+
+            - name: run application
+              run: npm start
