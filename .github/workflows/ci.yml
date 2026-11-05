@@ -2,10 +2,10 @@ name: devops
 
 on:
     push:
+        branches: [main]
 
     pull_request:
-        branches:
-            - main
+        branches: [main]
 
     workflow_dispatch:
 
@@ -19,12 +19,12 @@ jobs:
 
         steps:
             - name: checkout repository
-              uses: actions/checkout@v7.0.1
+              uses: actions/checkout@v4
 
             - name: setup nodejs
-              uses: actions/setup-node@7.1.0
+              uses: actions/setup-node@4
               with:
-                node-version: 24
+                node-version: 22
 
             - name: install dependencies
               run: npm install
