@@ -20,7 +20,7 @@ pipeline{
     stages {
         stage('Checkout') {
             steps {
-                Checkout scm
+                checkout scm
                 echo 'Repository checkout completed'
             }
         }
