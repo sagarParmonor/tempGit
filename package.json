@@ -5,6 +5,7 @@
   "main": "src/hello.js",
   "scripts": {
     "start": "node src/hello.js",
+    "check": "node --check src/hello.js",
     "test": "node --test"
   }
 }
